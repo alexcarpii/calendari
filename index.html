@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="ca">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>¿Cuándo quedamos?</title>
+  <title>Quan quedem?</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -24,7 +24,7 @@
     .card-title { font-weight: 700; font-size: 15px; margin-bottom: 12px; }
 
     label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: #444; }
-    input[type="text"], input[type="password"] {
+    input[type="text"] {
       width: 100%; padding: 13px 16px; border: 2px solid #e8e8e8; border-radius: 12px;
       font-size: 16px; outline: none; transition: border-color .18s; background: #fafafa; color: #111;
     }
@@ -114,24 +114,6 @@
 
     .desc { font-size: 14px; color: #777; margin-bottom: 14px; line-height: 1.5; }
 
-    /* Setup */
-    .step {
-      display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px;
-    }
-    .step-num {
-      flex-shrink: 0; width: 28px; height: 28px; background: #3d8b40; color: #fff;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 14px; margin-top: 2px;
-    }
-    .step-body { flex: 1; }
-    .step-body p { font-size: 14px; color: #444; line-height: 1.6; margin-bottom: 6px; }
-    .step-body a { color: #3d8b40; font-weight: 600; }
-    .step-body code {
-      background: #f0f0f0; padding: 2px 6px; border-radius: 5px;
-      font-size: 12px; font-family: monospace;
-    }
-    .reset-link { font-size: 12px; color: #aaa; text-align: center; margin-top: 8px; cursor: pointer; }
-    .reset-link:hover { color: #666; }
     .small-btn {
       padding: 4px 10px; font-size: 12px; border: none; border-radius: 8px;
       background: #3d8b40; color: #fff; cursor: pointer; font-weight: 600;
@@ -139,19 +121,14 @@
   </style>
 </head>
 <body>
-<div class="app" id="app"><div class="loading">Cargando…</div></div>
+<div class="app" id="app"><div class="loading">Carregant…</div></div>
 
 <script>
 // ── Storage: JSONBin.io v3 ────────────────────────────────
-// API pública con CORS correcto. Requiere una API key gratuita.
-// La key se guarda en localStorage del navegador — solo se pide una vez.
+const JBIN    = 'https://api.jsonbin.io/v3/b';
+const API_KEY = 'PON_AQUI_LA_TEVA_API_KEY';  // ← substitueix amb la teva Master Key
 
-const JBIN = 'https://api.jsonbin.io/v3/b';
-const KEY_STORE = 'quedamos_apikey';
-
-function getKey()     { return localStorage.getItem(KEY_STORE) || ''; }
-function saveKey(k)   { localStorage.setItem(KEY_STORE, k.trim()); }
-function clearKey()   { localStorage.removeItem(KEY_STORE); }
+function getKey() { return API_KEY; }
 
 async function createBin(data) {
   const r = await fetch(JBIN, {
@@ -189,99 +166,53 @@ let _months   = [];
 let _respSel  = new Set();
 
 const app = document.getElementById('app');
+const LOC  = 'ca-ES';
 
 // ── Utils ────────────────────────────────────────────────
 const today = () => new Date().toISOString().slice(0,10);
 
 function fmtLong(ds) {
-  return new Date(ds+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  return new Date(ds+'T12:00:00').toLocaleDateString(LOC, {weekday:'long', day:'numeric', month:'long'});
 }
 function fmtChip(ds) {
   const d = new Date(ds+'T12:00:00');
-  return { wd: d.toLocaleDateString('es-ES',{weekday:'short'}), day: d.getDate(), month: d.toLocaleDateString('es-ES',{month:'short'}) };
+  return {
+    wd:    d.toLocaleDateString(LOC, {weekday:'short'}),
+    day:   d.getDate(),
+    month: d.toLocaleDateString(LOC, {month:'short'}),
+  };
 }
 function baseUrl() {
   const u = window.location.href;
-  return u.includes('?') ? u.slice(0,u.indexOf('?')) : u;
+  return u.includes('?') ? u.slice(0, u.indexOf('?')) : u;
 }
 function copyText(text, btn) {
   (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
-    .catch(() => { const ta = Object.assign(document.createElement('textarea'),{value:text}); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); })
-    .finally(() => { btn.textContent='✓ Copiado'; btn.classList.add('ok'); setTimeout(()=>{ btn.textContent='Copiar'; btn.classList.remove('ok'); },2200); });
+    .catch(() => {
+      const ta = Object.assign(document.createElement('textarea'), {value: text});
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    })
+    .finally(() => {
+      btn.textContent = '✓ Copiat';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('ok'); }, 2200);
+    });
 }
 function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 // ── Router ───────────────────────────────────────────────
+// - Sense paràmetres → vista de creació (tu, el creador)
+// - ?id=XXX          → vista de resposta (els amics)
+// - ?id=XXX&v=r      → vista de resultats
 function init() {
-  if (!getKey()) { renderSetup(); return; }
   const p  = new URLSearchParams(window.location.search);
   const id = p.get('id');
   if (!id)                      renderCreate();
   else if (p.get('v') === 'r') showResults(id);
   else                          showRespond(id);
-}
-
-// ── SETUP (solo primera vez) ─────────────────────────────
-function renderSetup() {
-  app.innerHTML = `
-    <div class="header">
-      <div class="icon">🧗</div>
-      <h1>¿Cuándo quedamos?</h1>
-      <p class="sub">Configuración inicial — solo una vez</p>
-    </div>
-    <div class="card">
-      <div class="card-title">Conecta tu almacenamiento gratuito</div>
-      <p class="desc">La app necesita guardar los datos en algún sitio. Usamos <strong>JSONBin.io</strong> — es gratis y tarda 2 minutos.</p>
-
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <p>Ve a <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> → crea una cuenta gratuita</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <p>En el panel, ve a <strong>API Keys</strong> y copia tu <code>Master Key</code></p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <p>Pégala aquí:</p>
-          <input type="password" id="apikey" placeholder="$2a$10$..." style="margin-top:8px" autocomplete="off">
-        </div>
-      </div>
-    </div>
-    <button class="btn btn-primary" onclick="doSaveKey(this)">Guardar y empezar →</button>
-  `;
-  document.getElementById('apikey').focus();
-}
-
-async function doSaveKey(btn) {
-  const el  = document.getElementById('apikey');
-  const key = el.value.trim();
-  if (!key) { el.classList.add('err'); el.focus(); return; }
-
-  btn.disabled = true; btn.textContent = 'Verificando…';
-
-  // Verificar que la key funciona haciendo una llamada real
-  const tmp = localStorage.getItem(KEY_STORE);
-  saveKey(key);
-  try {
-    await createBin({ _test: true });
-    // Key válida — continuar
-    btn.textContent = '✓ Conectado';
-    setTimeout(() => init(), 600);
-  } catch(e) {
-    if (tmp) localStorage.setItem(KEY_STORE, tmp); else clearKey();
-    btn.disabled = false; btn.textContent = 'Guardar y empezar →';
-    el.classList.add('err');
-    alert('La API key no es válida o hay un error de red. Compruébala e inténtalo de nuevo.');
-    console.error(e);
-  }
 }
 
 // ── CREAR ────────────────────────────────────────────────
@@ -293,21 +224,20 @@ function renderCreate() {
   app.innerHTML = `
     <div class="header">
       <div class="icon">🧗</div>
-      <h1>¿Cuándo quedamos?</h1>
-      <p class="sub">Elige los días candidatos y comparte el link</p>
+      <h1>Quan quedem?</h1>
+      <p class="sub">Tria els dies candidats i comparteix l'enllaç</p>
     </div>
     <div class="card">
-      <label for="ename">Nombre del plan</label>
-      <input type="text" id="ename" placeholder="Ej: Escalada junio" maxlength="60" autocomplete="off">
+      <label for="ename">Nom del pla</label>
+      <input type="text" id="ename" placeholder="Ex: Escalada juny" maxlength="60" autocomplete="off">
     </div>
     <div class="card">
-      <div class="card-title">¿Qué días propones?</div>
-      <p class="desc">Toca los días para seleccionarlos.</p>
+      <div class="card-title">Quins dies proposes?</div>
+      <p class="desc">Toca els dies per seleccionar-los.</p>
       <div id="cal"></div>
-      <div class="cal-hint" id="hint">Toca los días disponibles</div>
+      <div class="cal-hint" id="hint">Toca els dies disponibles</div>
     </div>
-    <button class="btn btn-primary" onclick="doCreate(this)">Generar link para compartir →</button>
-    <div class="reset-link" onclick="resetKey()">⚙️ Cambiar API key</div>
+    <button class="btn btn-primary" onclick="doCreate(this)">Generar enllaç per compartir →</button>
   `;
   renderCal();
 }
@@ -315,21 +245,23 @@ function renderCreate() {
 function renderCal() {
   document.getElementById('cal').innerHTML = _months.map(renderCalMonth).join('');
   const n = _selDates.size, el = document.getElementById('hint');
-  if (el) el.textContent = n===0 ? 'Toca los días disponibles' : `${n} día${n!==1?'s':''} seleccionado${n!==1?'s':''}`;
+  if (el) el.textContent = n === 0
+    ? 'Toca els dies disponibles'
+    : `${n} dia${n !== 1 ? 'es' : ''} seleccionat${n !== 1 ? 's' : ''}`;
 }
 
 function renderCalMonth(m) {
   const td = today(), y = m.getFullYear(), mo = m.getMonth();
-  const title = m.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
-  const first = (new Date(y,mo,1).getDay()+6)%7;
-  const dim   = new Date(y,mo+1,0).getDate();
-  const dns   = ['L','M','X','J','V','S','D'];
-  let cells   = dns.map(n=>`<div class="cal-dn">${n}</div>`).join('');
-  for (let i=0; i<first; i++) cells += `<div class="cal-d empty"></div>`;
-  for (let d=1; d<=dim; d++) {
+  const title = m.toLocaleDateString(LOC, {month:'long', year:'numeric'});
+  const first = (new Date(y, mo, 1).getDay() + 6) % 7;
+  const dim   = new Date(y, mo+1, 0).getDate();
+  const dns   = ['Dl','Dt','Dc','Dj','Dv','Ds','Dg'];
+  let cells   = dns.map(n => `<div class="cal-dn">${n}</div>`).join('');
+  for (let i = 0; i < first; i++) cells += `<div class="cal-d empty"></div>`;
+  for (let d = 1; d <= dim; d++) {
     const ds  = `${y}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const sel = _selDates.has(ds);
-    const cls = ['cal-d', ds<td?'past':'', ds===td&&!sel?'today':'', sel?'sel':''].filter(Boolean).join(' ');
+    const cls = ['cal-d', ds < td ? 'past' : '', ds === td && !sel ? 'today' : '', sel ? 'sel' : ''].filter(Boolean).join(' ');
     cells += `<div class="${cls}" onclick="toggleCal('${ds}')">${d}</div>`;
   }
   return `<div class="cal-wrap"><div class="cal-title">${title}</div><div class="cal-grid">${cells}</div></div>`;
@@ -345,16 +277,16 @@ async function doCreate(btn) {
   const name   = nameEl.value.trim();
   if (!name) { nameEl.classList.add('err'); nameEl.focus(); return; }
   nameEl.classList.remove('err');
-  if (_selDates.size===0) { alert('Elige al menos un día.'); return; }
+  if (_selDates.size === 0) { alert('Tria almenys un dia.'); return; }
 
-  btn.disabled = true; btn.textContent = 'Creando…';
+  btn.disabled = true; btn.textContent = 'Creant…';
   try {
     const session = { v:1, event:name, created:new Date().toISOString(), dates:[..._selDates].sort(), responses:[] };
     const id = await createBin(session);
     renderShare(id, name);
   } catch(e) {
-    btn.disabled = false; btn.textContent = 'Generar link para compartir →';
-    alert('Error al crear la sesión. Comprueba tu conexión.');
+    btn.disabled = false; btn.textContent = 'Generar enllaç per compartir →';
+    alert('Error en crear la sessió. Comprova la connexió.');
     console.error(e);
   }
 }
@@ -366,67 +298,70 @@ function renderShare(id, eventName) {
     <div class="header">
       <div class="icon">🎉</div>
       <h1>${esc(eventName)}</h1>
-      <p class="sub">¡Listo! Comparte el link con tus amigos</p>
+      <p class="sub">Llest! Comparteix l'enllaç amb els teus amics</p>
     </div>
     <div class="card">
-      <div class="card-title">Link para los amigos</div>
-      <p class="desc">Entran, marcan sus días y listo. Sin registro.</p>
+      <div class="card-title">Enllaç per als amics</div>
+      <p class="desc">Entren, marquen els seus dies i llest. Sense registre.</p>
       <div class="share-box">
         <span class="share-url">${esc(friendUrl)}</span>
         <button class="copy-btn" onclick="copyText(${JSON.stringify(friendUrl)},this)">Copiar</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">Tu link de resultados</div>
-      <p class="desc">Muestra quién puede qué día, en tiempo real.</p>
+      <div class="card-title">El teu enllaç de resultats</div>
+      <p class="desc">Mostra qui pot quin dia, en temps real.</p>
       <div class="share-box">
         <span class="share-url">${esc(adminUrl)}</span>
         <button class="copy-btn" onclick="copyText(${JSON.stringify(adminUrl)},this)">Copiar</button>
       </div>
     </div>
-    <button class="btn btn-primary" onclick="showResults('${id}')">Ver resultados →</button>
-    <button class="btn btn-ghost" onclick="renderCreate()">← Crear otra sesión</button>
+    <button class="btn btn-primary" onclick="showResults('${id}')">Veure resultats →</button>
+    <button class="btn btn-ghost" onclick="renderCreate()">← Crear una altra sessió</button>
   `;
 }
 
-// ── RESPONDER ────────────────────────────────────────────
+// ── RESPONDRE ────────────────────────────────────────────
 async function showRespond(id) {
-  app.innerHTML = `<div class="loading">Cargando…</div>`;
+  app.innerHTML = `<div class="loading">Carregant…</div>`;
   try {
     const s = await readBin(id);
     renderRespond(id, s);
   } catch(e) {
-    app.innerHTML = `<div style="text-align:center;padding:40px;color:#c62828">⚠️<br><br>No se encontró la sesión.<br>Comprueba el link.</div>`;
+    app.innerHTML = `<div style="text-align:center;padding:40px;color:#c62828">⚠️<br><br>No s'ha trobat la sessió.<br>Comprova l'enllaç.</div>`;
   }
 }
 
 function renderRespond(id, s) {
   _respSel = new Set();
   const total = s.responses.length;
-  const chips = s.dates.map((ds,i) => {
+  const chips = s.dates.map((ds, i) => {
     const f = fmtChip(ds);
     return `<div class="chip" onclick="toggleChip(this,${i})">
       <div class="wd">${f.wd}</div><div class="dy">${f.day}</div><div class="mo">${f.month}</div>
     </div>`;
   }).join('');
 
+  const subtitle = total === 0 ? 'Sigues el primer en respondre'
+    : `${total} persona${total !== 1 ? 'es' : ''} ${total !== 1 ? 'han' : 'ha'} respost`;
+
   app.innerHTML = `
     <div class="header">
       <div class="icon">🧗</div>
       <h1>${esc(s.event)}</h1>
-      <p class="sub">${total ? `${total} persona${total!==1?'s':''} ${total!==1?'han':'ha'} respondido` : 'Sé el primero en responder'}</p>
+      <p class="sub">${subtitle}</p>
     </div>
     <div class="card">
-      <label for="pname">¿Cómo te llamas?</label>
-      <input type="text" id="pname" placeholder="Tu nombre" maxlength="40" autocomplete="given-name">
+      <label for="pname">Com et dius?</label>
+      <input type="text" id="pname" placeholder="El teu nom" maxlength="40" autocomplete="given-name">
     </div>
     <div class="card">
-      <div class="card-title">¿Qué días puedes?</div>
-      <p class="desc">Toca los días en los que estás libre.</p>
+      <div class="card-title">Quins dies pots?</div>
+      <p class="desc">Toca els dies en què estàs lliure.</p>
       <div class="chip-grid">${chips}</div>
     </div>
-    <button class="btn btn-primary" onclick="doSubmit('${id}',this)">Enviar disponibilidad →</button>
-    <button class="btn btn-ghost" onclick="showResults('${id}')">Ver resultados sin responder</button>
+    <button class="btn btn-primary" onclick="doSubmit('${id}',this)">Enviar disponibilitat →</button>
+    <button class="btn btn-ghost" onclick="showResults('${id}')">Veure resultats sense respondre</button>
   `;
 }
 
@@ -440,7 +375,7 @@ async function doSubmit(id, btn) {
   const name   = nameEl.value.trim();
   if (!name) { nameEl.classList.add('err'); nameEl.focus(); return; }
 
-  btn.disabled = true; btn.textContent = 'Enviando…';
+  btn.disabled = true; btn.textContent = 'Enviant…';
   try {
     const latest = await readBin(id);
     latest.responses = latest.responses.filter(r => r.name.toLowerCase() !== name.toLowerCase());
@@ -448,8 +383,8 @@ async function doSubmit(id, btn) {
     await updateBin(id, latest);
     renderSuccess(id, latest.event);
   } catch(e) {
-    btn.disabled = false; btn.textContent = 'Enviar disponibilidad →';
-    alert('Error al enviar. Inténtalo de nuevo.');
+    btn.disabled = false; btn.textContent = 'Enviar disponibilitat →';
+    alert('Error en enviar. Torna-ho a intentar.');
     console.error(e);
   }
 }
@@ -458,21 +393,21 @@ function renderSuccess(id, eventName) {
   app.innerHTML = `
     <div class="success-wrap">
       <div class="big">✅</div>
-      <h2>¡Enviado!</h2>
-      <p>Tu disponibilidad para <strong>${esc(eventName)}</strong> ha quedado guardada.</p>
-      <button class="btn btn-primary" style="max-width:280px;margin:0 auto" onclick="showResults('${id}')">Ver resultados →</button>
+      <h2>Enviat!</h2>
+      <p>La teva disponibilitat per a <strong>${esc(eventName)}</strong> ha quedat guardada.</p>
+      <button class="btn btn-primary" style="max-width:280px;margin:0 auto" onclick="showResults('${id}')">Veure resultats →</button>
     </div>
   `;
 }
 
-// ── RESULTADOS ───────────────────────────────────────────
+// ── RESULTATS ────────────────────────────────────────────
 async function showResults(id) {
-  app.innerHTML = `<div class="loading">Cargando resultados…</div>`;
+  app.innerHTML = `<div class="loading">Carregant resultats…</div>`;
   try {
     const s = await readBin(id);
     renderResults(id, s);
   } catch(e) {
-    app.innerHTML = `<div style="text-align:center;padding:40px;color:#c62828">⚠️<br><br>Error cargando resultados.</div>`;
+    app.innerHTML = `<div style="text-align:center;padding:40px;color:#c62828">⚠️<br><br>Error carregant els resultats.</div>`;
   }
 }
 
@@ -480,16 +415,19 @@ function renderResults(id, s) {
   const total = s.responses.length;
   const maxN  = total || 1;
   const counts = {};
-  s.dates.forEach(d => { counts[d]={n:0,names:[]}; });
-  s.responses.forEach(r => { r.dates.forEach(d => { if(counts[d]){ counts[d].n++; counts[d].names.push(r.name); } }); });
+  s.dates.forEach(d => { counts[d] = {n:0, names:[]}; });
+  s.responses.forEach(r => {
+    r.dates.forEach(d => { if (counts[d]) { counts[d].n++; counts[d].names.push(r.name); } });
+  });
   const sorted = [...s.dates].sort((a,b) => counts[b].n - counts[a].n);
 
   const rows = sorted.map(d => {
-    const {n,names} = counts[d];
-    const pct = Math.round((n/maxN)*100);
-    const col = n===0?'#e0e0e0':pct<35?'#a5d6a7':pct<65?'#4caf50':'#2e7d32';
-    const nHtml = names.length ? `<div class="res-names">${names.map(esc).join(', ')}</div>`
-                               : `<div class="res-names res-empty">Nadie de momento</div>`;
+    const {n, names} = counts[d];
+    const pct = Math.round((n / maxN) * 100);
+    const col = n === 0 ? '#e0e0e0' : pct < 35 ? '#a5d6a7' : pct < 65 ? '#4caf50' : '#2e7d32';
+    const nHtml = names.length
+      ? `<div class="res-names">${names.map(esc).join(', ')}</div>`
+      : `<div class="res-names res-empty">Ningú de moment</div>`;
     return `<div class="res-row">
       <div class="res-hdr"><span class="res-label">${esc(fmtLong(d))}</span><span class="res-score">${n}/${total}</span></div>
       <div class="res-bg"><div class="res-bar" style="width:${pct}%;background:${col}"></div></div>
@@ -497,33 +435,33 @@ function renderResults(id, s) {
     </div>`;
   }).join('');
 
+  const subtitle = total === 0 ? 'Encara no hi ha respostes'
+    : `${total} persona${total !== 1 ? 'es' : ''} ${total !== 1 ? 'han' : 'ha'} respost`;
+
   const respHtml = total > 0
-    ? `<div class="card"><div class="card-title">Han respondido (${total})</div>
-       <div class="tags">${s.responses.map(r=>`<span class="tag">${esc(r.name)}</span>`).join('')}</div></div>` : '';
+    ? `<div class="card"><div class="card-title">Han respost (${total})</div>
+       <div class="tags">${s.responses.map(r => `<span class="tag">${esc(r.name)}</span>`).join('')}</div></div>`
+    : '';
 
   const friendUrl = `${baseUrl()}?id=${id}`;
   app.innerHTML = `
     <div class="header">
       <div class="icon">📊</div>
       <h1>${esc(s.event)}</h1>
-      <p class="sub">${total?`${total} persona${total!==1?'s':''} ${total!==1?'han':'ha'} respondido`:'Aún no hay respuestas'}
-        &nbsp;·&nbsp;<button class="small-btn" onclick="showResults('${id}')">↺ Actualizar</button></p>
+      <p class="sub">${subtitle}
+        &nbsp;·&nbsp;<button class="small-btn" onclick="showResults('${id}')">↺ Actualitzar</button></p>
     </div>
-    <div class="card">${rows||'<p style="color:#aaa;text-align:center;padding:20px 0">Sin respuestas todavía</p>'}</div>
+    <div class="card">${rows || '<p style="color:#aaa;text-align:center;padding:20px 0">Sense respostes encara</p>'}</div>
     ${respHtml}
     <div class="card">
-      <div class="card-title">Link para compartir</div>
+      <div class="card-title">Enllaç per compartir</div>
       <div class="share-box">
         <span class="share-url">${esc(friendUrl)}</span>
         <button class="copy-btn" onclick="copyText(${JSON.stringify(friendUrl)},this)">Copiar</button>
       </div>
     </div>
-    <button class="btn btn-ghost" onclick="showRespond('${id}')">← Cambiar mi disponibilidad</button>
+    <button class="btn btn-ghost" onclick="showRespond('${id}')">← Canviar la meva disponibilitat</button>
   `;
-}
-
-function resetKey() {
-  if (confirm('¿Borrar la API key guardada?')) { clearKey(); renderSetup(); }
 }
 
 // ── Arrancar ─────────────────────────────────────────────
