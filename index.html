@@ -6,18 +6,11 @@
   <title>¿Cuándo quedamos?</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f0f2f0;
-      color: #1a1a1a;
-      min-height: 100vh;
+      background: #f0f2f0; color: #1a1a1a; min-height: 100vh;
     }
-    .app {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 20px 16px 56px;
-    }
+    .app { max-width: 480px; margin: 0 auto; padding: 20px 16px 56px; }
 
     .header { text-align: center; margin-bottom: 26px; padding-top: 6px; }
     .header .icon { font-size: 44px; line-height: 1; margin-bottom: 10px; }
@@ -25,39 +18,31 @@
     .header .sub { color: #666; margin-top: 5px; font-size: 14px; }
 
     .card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 14px;
+      background: #fff; border-radius: 18px; padding: 20px; margin-bottom: 14px;
       box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.04);
     }
     .card-title { font-weight: 700; font-size: 15px; margin-bottom: 12px; }
 
     label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: #444; }
-    input[type="text"] {
-      width: 100%; padding: 13px 16px;
-      border: 2px solid #e8e8e8; border-radius: 12px;
-      font-size: 16px; outline: none;
-      transition: border-color .18s; background: #fafafa; color: #111;
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: 13px 16px; border: 2px solid #e8e8e8; border-radius: 12px;
+      font-size: 16px; outline: none; transition: border-color .18s; background: #fafafa; color: #111;
     }
-    input[type="text"]:focus { border-color: #3d8b40; background: #fff; }
+    input:focus { border-color: #3d8b40; background: #fff; }
     input.err { border-color: #e53935; }
 
     .btn {
-      display: block; width: 100%; padding: 15px;
-      border: none; border-radius: 14px;
+      display: block; width: 100%; padding: 15px; border: none; border-radius: 14px;
       font-size: 16px; font-weight: 700; cursor: pointer;
-      transition: transform .12s, opacity .12s; text-align: center;
-      margin-bottom: 10px;
+      transition: transform .12s, opacity .12s; text-align: center; margin-bottom: 10px;
     }
     .btn:active { transform: scale(.97); }
     .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
     .btn-primary { background: #3d8b40; color: #fff; }
     .btn-primary:hover:not(:disabled) { background: #357a38; }
     .btn-ghost {
-      background: transparent; color: #3d8b40;
-      font-size: 14px; padding: 12px; font-weight: 600;
-      border: 1.5px solid #d4ebd5; border-radius: 12px;
+      background: transparent; color: #3d8b40; font-size: 14px; padding: 12px;
+      font-weight: 600; border: 1.5px solid #d4ebd5; border-radius: 12px;
     }
 
     /* Calendar */
@@ -67,11 +52,9 @@
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
     .cal-dn { text-align: center; font-size: 11px; font-weight: 700; color: #aaa; padding: 3px 0 6px; }
     .cal-d {
-      aspect-ratio: 1; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
+      aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center;
       font-size: 14px; cursor: pointer; user-select: none;
-      transition: background .12s, color .12s;
-      -webkit-tap-highlight-color: transparent;
+      transition: background .12s, color .12s; -webkit-tap-highlight-color: transparent;
     }
     .cal-d.empty { pointer-events: none; }
     .cal-d.past { color: #ccc; pointer-events: none; }
@@ -124,9 +107,6 @@
     .tag { background: #e8f5e9; color: #2e7d32; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
 
     .loading { text-align: center; padding: 60px 20px; color: #aaa; font-size: 15px; }
-    .loading .spin { font-size: 32px; display: block; margin-bottom: 12px; animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
     .success-wrap { text-align: center; padding: 16px 0 28px; }
     .success-wrap .big { font-size: 52px; margin-bottom: 12px; }
     .success-wrap h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
@@ -134,64 +114,74 @@
 
     .desc { font-size: 14px; color: #777; margin-bottom: 14px; line-height: 1.5; }
 
-    /* Setup banner — solo visible desde file:// */
-    .setup-banner {
-      background: #fff8e1;
-      border: 1.5px solid #ffcc02;
-      border-radius: 16px;
-      padding: 18px 20px;
-      margin-bottom: 16px;
+    /* Setup */
+    .step {
+      display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px;
     }
-    .setup-banner h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: #333; }
-    .setup-banner p { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 10px; }
-    .setup-banner ol { font-size: 13px; color: #444; padding-left: 18px; line-height: 1.8; }
-    .setup-banner a { color: #3d8b40; font-weight: 600; }
-    .setup-banner .badge {
-      display: inline-block; background: #3d8b40; color: #fff;
-      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 4px;
+    .step-num {
+      flex-shrink: 0; width: 28px; height: 28px; background: #3d8b40; color: #fff;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; margin-top: 2px;
+    }
+    .step-body { flex: 1; }
+    .step-body p { font-size: 14px; color: #444; line-height: 1.6; margin-bottom: 6px; }
+    .step-body a { color: #3d8b40; font-weight: 600; }
+    .step-body code {
+      background: #f0f0f0; padding: 2px 6px; border-radius: 5px;
+      font-size: 12px; font-family: monospace;
+    }
+    .reset-link { font-size: 12px; color: #aaa; text-align: center; margin-top: 8px; cursor: pointer; }
+    .reset-link:hover { color: #666; }
+    .small-btn {
+      padding: 4px 10px; font-size: 12px; border: none; border-radius: 8px;
+      background: #3d8b40; color: #fff; cursor: pointer; font-weight: 600;
     }
   </style>
 </head>
 <body>
-<div class="app" id="app"><div class="loading"><span class="spin">⚙️</span>Cargando…</div></div>
+<div class="app" id="app"><div class="loading">Cargando…</div></div>
 
 <script>
-// ── Storage: jsonblob.com ────────────────────────────────
-// API REST pública, sin auth, sin backend propio.
-// Requiere HTTPS (no funciona desde file://).
-const API = 'https://jsonblob.com/api/jsonBlob';
+// ── Storage: JSONBin.io v3 ────────────────────────────────
+// API pública con CORS correcto. Requiere una API key gratuita.
+// La key se guarda en localStorage del navegador — solo se pide una vez.
 
-async function createBlob(data) {
-  const r = await fetch(API, {
+const JBIN = 'https://api.jsonbin.io/v3/b';
+const KEY_STORE = 'quedamos_apikey';
+
+function getKey()     { return localStorage.getItem(KEY_STORE) || ''; }
+function saveKey(k)   { localStorage.setItem(KEY_STORE, k.trim()); }
+function clearKey()   { localStorage.removeItem(KEY_STORE); }
+
+async function createBin(data) {
+  const r = await fetch(JBIN, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': getKey(), 'X-Bin-Private': 'false' },
     body: JSON.stringify(data),
   });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  const loc = r.headers.get('Location') || '';
-  const id  = loc.split('/').pop();
-  if (!id) throw new Error('no id in Location header');
-  return id;
+  const j = await r.json();
+  return j.metadata.id;
 }
 
-async function readBlob(id) {
-  const r = await fetch(`${API}/${id}`);
+async function readBin(id) {
+  const r = await fetch(`${JBIN}/${id}/latest`, {
+    headers: { 'X-Master-Key': getKey() },
+  });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  return r.json();
+  const j = await r.json();
+  return j.record;
 }
 
-async function updateBlob(id, data) {
-  const r = await fetch(`${API}/${id}`, {
+async function updateBin(id, data) {
+  const r = await fetch(`${JBIN}/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': getKey() },
     body: JSON.stringify(data),
   });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
 }
-
-// ── Detectar file:// ─────────────────────────────────────
-const IS_LOCAL = location.protocol === 'file:';
 
 // ── Globals ──────────────────────────────────────────────
 let _selDates = new Set();
@@ -200,7 +190,7 @@ let _respSel  = new Set();
 
 const app = document.getElementById('app');
 
-// ── Utilidades ───────────────────────────────────────────
+// ── Utils ────────────────────────────────────────────────
 const today = () => new Date().toISOString().slice(0,10);
 
 function fmtLong(ds) {
@@ -208,60 +198,90 @@ function fmtLong(ds) {
 }
 function fmtChip(ds) {
   const d = new Date(ds+'T12:00:00');
-  return {
-    wd:    d.toLocaleDateString('es-ES',{weekday:'short'}),
-    day:   d.getDate(),
-    month: d.toLocaleDateString('es-ES',{month:'short'}),
-  };
+  return { wd: d.toLocaleDateString('es-ES',{weekday:'short'}), day: d.getDate(), month: d.toLocaleDateString('es-ES',{month:'short'}) };
 }
-
 function baseUrl() {
   const u = window.location.href;
   return u.includes('?') ? u.slice(0,u.indexOf('?')) : u;
 }
-
 function copyText(text, btn) {
   (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
-    .catch(() => {
-      const ta = Object.assign(document.createElement('textarea'),{value:text});
-      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-    })
-    .finally(() => {
-      btn.textContent = '✓ Copiado';
-      btn.classList.add('ok');
-      setTimeout(()=>{ btn.textContent='Copiar'; btn.classList.remove('ok'); }, 2200);
-    });
+    .catch(() => { const ta = Object.assign(document.createElement('textarea'),{value:text}); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); })
+    .finally(() => { btn.textContent='✓ Copiado'; btn.classList.add('ok'); setTimeout(()=>{ btn.textContent='Copiar'; btn.classList.remove('ok'); },2200); });
 }
-
 function esc(s) {
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 // ── Router ───────────────────────────────────────────────
 function init() {
+  if (!getKey()) { renderSetup(); return; }
   const p  = new URLSearchParams(window.location.search);
   const id = p.get('id');
-  if (!id)                        renderCreate();
-  else if (p.get('v') === 'r')   showResults(id, true);
-  else                            showRespond(id);
+  if (!id)                      renderCreate();
+  else if (p.get('v') === 'r') showResults(id);
+  else                          showRespond(id);
 }
 
-// ── Banner "necesita HTTPS" ───────────────────────────────
-function localBanner() {
-  if (!IS_LOCAL) return '';
-  return `
-    <div class="setup-banner">
-      <h3>⚠️ Paso previo: subir el archivo online</h3>
-      <p>Para que los links funcionen desde el móvil de tus amigos, el archivo necesita estar en una URL pública. Con <strong>Netlify Drop</strong> tardas 30 segundos y es gratis.</p>
-      <ol>
-        <li>Ve a <a href="https://app.netlify.com/drop" target="_blank">app.netlify.com/drop</a></li>
-        <li>Arrastra el archivo <code>calendario.html</code> a la página</li>
-        <li>Copia la URL que te dan (ej. <em>happy-fox-123.netlify.app</em>)</li>
-        <li>Abre esa URL y crea tu sesión desde allí</li>
-      </ol>
-    </div>`;
+// ── SETUP (solo primera vez) ─────────────────────────────
+function renderSetup() {
+  app.innerHTML = `
+    <div class="header">
+      <div class="icon">🧗</div>
+      <h1>¿Cuándo quedamos?</h1>
+      <p class="sub">Configuración inicial — solo una vez</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Conecta tu almacenamiento gratuito</div>
+      <p class="desc">La app necesita guardar los datos en algún sitio. Usamos <strong>JSONBin.io</strong> — es gratis y tarda 2 minutos.</p>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>Ve a <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> → crea una cuenta gratuita</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <p>En el panel, ve a <strong>API Keys</strong> y copia tu <code>Master Key</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <p>Pégala aquí:</p>
+          <input type="password" id="apikey" placeholder="$2a$10$..." style="margin-top:8px" autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="doSaveKey(this)">Guardar y empezar →</button>
+  `;
+  document.getElementById('apikey').focus();
+}
+
+async function doSaveKey(btn) {
+  const el  = document.getElementById('apikey');
+  const key = el.value.trim();
+  if (!key) { el.classList.add('err'); el.focus(); return; }
+
+  btn.disabled = true; btn.textContent = 'Verificando…';
+
+  // Verificar que la key funciona haciendo una llamada real
+  const tmp = localStorage.getItem(KEY_STORE);
+  saveKey(key);
+  try {
+    await createBin({ _test: true });
+    // Key válida — continuar
+    btn.textContent = '✓ Conectado';
+    setTimeout(() => init(), 600);
+  } catch(e) {
+    if (tmp) localStorage.setItem(KEY_STORE, tmp); else clearKey();
+    btn.disabled = false; btn.textContent = 'Guardar y empezar →';
+    el.classList.add('err');
+    alert('La API key no es válida o hay un error de red. Compruébala e inténtalo de nuevo.');
+    console.error(e);
+  }
 }
 
 // ── CREAR ────────────────────────────────────────────────
@@ -276,7 +296,6 @@ function renderCreate() {
       <h1>¿Cuándo quedamos?</h1>
       <p class="sub">Elige los días candidatos y comparte el link</p>
     </div>
-    ${localBanner()}
     <div class="card">
       <label for="ename">Nombre del plan</label>
       <input type="text" id="ename" placeholder="Ej: Escalada junio" maxlength="60" autocomplete="off">
@@ -288,6 +307,7 @@ function renderCreate() {
       <div class="cal-hint" id="hint">Toca los días disponibles</div>
     </div>
     <button class="btn btn-primary" onclick="doCreate(this)">Generar link para compartir →</button>
+    <div class="reset-link" onclick="resetKey()">⚙️ Cambiar API key</div>
   `;
   renderCal();
 }
@@ -295,8 +315,7 @@ function renderCreate() {
 function renderCal() {
   document.getElementById('cal').innerHTML = _months.map(renderCalMonth).join('');
   const n = _selDates.size, el = document.getElementById('hint');
-  if (el) el.textContent = n===0 ? 'Toca los días disponibles'
-    : `${n} día${n!==1?'s':''} seleccionado${n!==1?'s':''}`;
+  if (el) el.textContent = n===0 ? 'Toca los días disponibles' : `${n} día${n!==1?'s':''} seleccionado${n!==1?'s':''}`;
 }
 
 function renderCalMonth(m) {
@@ -329,14 +348,13 @@ async function doCreate(btn) {
   if (_selDates.size===0) { alert('Elige al menos un día.'); return; }
 
   btn.disabled = true; btn.textContent = 'Creando…';
-
   try {
     const session = { v:1, event:name, created:new Date().toISOString(), dates:[..._selDates].sort(), responses:[] };
-    const id = await createBlob(session);
+    const id = await createBin(session);
     renderShare(id, name);
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Generar link para compartir →';
-    alert('Error al crear la sesión.\n\n¿Estás abriendo el archivo como file://?\nNecesitas subirlo a una URL pública (Netlify Drop) para que funcione.');
+    alert('Error al crear la sesión. Comprueba tu conexión.');
     console.error(e);
   }
 }
@@ -344,7 +362,6 @@ async function doCreate(btn) {
 function renderShare(id, eventName) {
   const friendUrl = `${baseUrl()}?id=${id}`;
   const adminUrl  = `${baseUrl()}?id=${id}&v=r`;
-
   app.innerHTML = `
     <div class="header">
       <div class="icon">🎉</div>
@@ -353,7 +370,7 @@ function renderShare(id, eventName) {
     </div>
     <div class="card">
       <div class="card-title">Link para los amigos</div>
-      <p class="desc">Mándalo al grupo. Entran, marcan sus días y listo.</p>
+      <p class="desc">Entran, marcan sus días y listo. Sin registro.</p>
       <div class="share-box">
         <span class="share-url">${esc(friendUrl)}</span>
         <button class="copy-btn" onclick="copyText(${JSON.stringify(friendUrl)},this)">Copiar</button>
@@ -361,22 +378,22 @@ function renderShare(id, eventName) {
     </div>
     <div class="card">
       <div class="card-title">Tu link de resultados</div>
-      <p class="desc">Guárdatelo. Muestra quién puede qué día, se actualiza en tiempo real.</p>
+      <p class="desc">Muestra quién puede qué día, en tiempo real.</p>
       <div class="share-box">
         <span class="share-url">${esc(adminUrl)}</span>
         <button class="copy-btn" onclick="copyText(${JSON.stringify(adminUrl)},this)">Copiar</button>
       </div>
     </div>
-    <button class="btn btn-primary" onclick="showResults('${id}',true)">Ver resultados →</button>
+    <button class="btn btn-primary" onclick="showResults('${id}')">Ver resultados →</button>
     <button class="btn btn-ghost" onclick="renderCreate()">← Crear otra sesión</button>
   `;
 }
 
 // ── RESPONDER ────────────────────────────────────────────
 async function showRespond(id) {
-  app.innerHTML = `<div class="loading"><span class="spin">⏳</span>Cargando…</div>`;
+  app.innerHTML = `<div class="loading">Cargando…</div>`;
   try {
-    const s = await readBlob(id);
+    const s = await readBin(id);
     renderRespond(id, s);
   } catch(e) {
     app.innerHTML = `<div style="text-align:center;padding:40px;color:#c62828">⚠️<br><br>No se encontró la sesión.<br>Comprueba el link.</div>`;
@@ -386,7 +403,6 @@ async function showRespond(id) {
 function renderRespond(id, s) {
   _respSel = new Set();
   const total = s.responses.length;
-
   const chips = s.dates.map((ds,i) => {
     const f = fmtChip(ds);
     return `<div class="chip" onclick="toggleChip(this,${i})">
@@ -410,7 +426,7 @@ function renderRespond(id, s) {
       <div class="chip-grid">${chips}</div>
     </div>
     <button class="btn btn-primary" onclick="doSubmit('${id}',this)">Enviar disponibilidad →</button>
-    <button class="btn btn-ghost" onclick="showResults('${id}',false)">Ver resultados sin responder</button>
+    <button class="btn btn-ghost" onclick="showResults('${id}')">Ver resultados sin responder</button>
   `;
 }
 
@@ -425,13 +441,11 @@ async function doSubmit(id, btn) {
   if (!name) { nameEl.classList.add('err'); nameEl.focus(); return; }
 
   btn.disabled = true; btn.textContent = 'Enviando…';
-
   try {
-    const latest = await readBlob(id);
-    // Sobreescribir respuesta con mismo nombre
+    const latest = await readBin(id);
     latest.responses = latest.responses.filter(r => r.name.toLowerCase() !== name.toLowerCase());
     latest.responses.push({ name, dates: [..._respSel].map(i => latest.dates[i]).sort(), ts: new Date().toISOString() });
-    await updateBlob(id, latest);
+    await updateBin(id, latest);
     renderSuccess(id, latest.event);
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Enviar disponibilidad →';
@@ -446,18 +460,16 @@ function renderSuccess(id, eventName) {
       <div class="big">✅</div>
       <h2>¡Enviado!</h2>
       <p>Tu disponibilidad para <strong>${esc(eventName)}</strong> ha quedado guardada.</p>
-      <button class="btn btn-primary" style="max-width:280px;margin:0 auto" onclick="showResults('${id}',false)">
-        Ver resultados →
-      </button>
+      <button class="btn btn-primary" style="max-width:280px;margin:0 auto" onclick="showResults('${id}')">Ver resultados →</button>
     </div>
   `;
 }
 
 // ── RESULTADOS ───────────────────────────────────────────
-async function showResults(id, isAdmin) {
-  app.innerHTML = `<div class="loading"><span class="spin">📊</span>Cargando…</div>`;
+async function showResults(id) {
+  app.innerHTML = `<div class="loading">Cargando resultados…</div>`;
   try {
-    const s = await readBlob(id);
+    const s = await readBin(id);
     renderResults(id, s);
   } catch(e) {
     app.innerHTML = `<div style="text-align:center;padding:40px;color:#c62828">⚠️<br><br>Error cargando resultados.</div>`;
@@ -467,22 +479,17 @@ async function showResults(id, isAdmin) {
 function renderResults(id, s) {
   const total = s.responses.length;
   const maxN  = total || 1;
-
   const counts = {};
-  s.dates.forEach(d => { counts[d] = {n:0, names:[]}; });
-  s.responses.forEach(r => {
-    r.dates.forEach(d => { if (counts[d]) { counts[d].n++; counts[d].names.push(r.name); } });
-  });
-
+  s.dates.forEach(d => { counts[d]={n:0,names:[]}; });
+  s.responses.forEach(r => { r.dates.forEach(d => { if(counts[d]){ counts[d].n++; counts[d].names.push(r.name); } }); });
   const sorted = [...s.dates].sort((a,b) => counts[b].n - counts[a].n);
 
   const rows = sorted.map(d => {
-    const {n, names} = counts[d];
+    const {n,names} = counts[d];
     const pct = Math.round((n/maxN)*100);
-    const col = n===0 ? '#e0e0e0' : pct<35 ? '#a5d6a7' : pct<65 ? '#4caf50' : '#2e7d32';
-    const nHtml = names.length
-      ? `<div class="res-names">${names.map(esc).join(', ')}</div>`
-      : `<div class="res-names res-empty">Nadie de momento</div>`;
+    const col = n===0?'#e0e0e0':pct<35?'#a5d6a7':pct<65?'#4caf50':'#2e7d32';
+    const nHtml = names.length ? `<div class="res-names">${names.map(esc).join(', ')}</div>`
+                               : `<div class="res-names res-empty">Nadie de momento</div>`;
     return `<div class="res-row">
       <div class="res-hdr"><span class="res-label">${esc(fmtLong(d))}</span><span class="res-score">${n}/${total}</span></div>
       <div class="res-bg"><div class="res-bar" style="width:${pct}%;background:${col}"></div></div>
@@ -492,17 +499,15 @@ function renderResults(id, s) {
 
   const respHtml = total > 0
     ? `<div class="card"><div class="card-title">Han respondido (${total})</div>
-       <div class="tags">${s.responses.map(r=>`<span class="tag">${esc(r.name)}</span>`).join('')}</div></div>`
-    : '';
+       <div class="tags">${s.responses.map(r=>`<span class="tag">${esc(r.name)}</span>`).join('')}</div></div>` : '';
 
   const friendUrl = `${baseUrl()}?id=${id}`;
-
   app.innerHTML = `
     <div class="header">
       <div class="icon">📊</div>
       <h1>${esc(s.event)}</h1>
-      <p class="sub">${total ? `${total} persona${total!==1?'s':''} ${total!==1?'han':'ha'} respondido` : 'Aún no hay respuestas'}
-      &nbsp;·&nbsp;<button class="copy-btn" style="padding:4px 10px;font-size:12px" onclick="showResults('${id}',false)">↺ Actualizar</button></p>
+      <p class="sub">${total?`${total} persona${total!==1?'s':''} ${total!==1?'han':'ha'} respondido`:'Aún no hay respuestas'}
+        &nbsp;·&nbsp;<button class="small-btn" onclick="showResults('${id}')">↺ Actualizar</button></p>
     </div>
     <div class="card">${rows||'<p style="color:#aaa;text-align:center;padding:20px 0">Sin respuestas todavía</p>'}</div>
     ${respHtml}
@@ -515,6 +520,10 @@ function renderResults(id, s) {
     </div>
     <button class="btn btn-ghost" onclick="showRespond('${id}')">← Cambiar mi disponibilidad</button>
   `;
+}
+
+function resetKey() {
+  if (confirm('¿Borrar la API key guardada?')) { clearKey(); renderSetup(); }
 }
 
 // ── Arrancar ─────────────────────────────────────────────
